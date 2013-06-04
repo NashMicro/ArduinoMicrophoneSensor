@@ -11,9 +11,10 @@ int mic0Ambient = 0;
 int mic1Ambient = 0;
 int ambientLoops = 0;
 
-const int AMBIENT_DETECTION_LOOPS = 300;
+const int AMBIENT_DETECTION_LOOPS = 100;
 const int LOOP_DELAY = 10;
-const int AMBIENT_THREASHOLD = 3;          // The mic level over the detected ambient
+const int MIC0_AMBIENT_THREASHOLD = 10;          // The mic level over the detected ambient
+const int MIC1_AMBIENT_THREASHOLD = 10;          // The mic level over the detected ambient
 
 int mic0AmbientVals[AMBIENT_DETECTION_LOOPS];
 int mic1AmbientVals[AMBIENT_DETECTION_LOOPS];
@@ -42,6 +43,7 @@ void loop() {
   // The first loops (# defined by AMBIENT_DETECTION_LOOPS) are for detecting the level of ambient noise.
   if(ambientLoops < AMBIENT_DETECTION_LOOPS)
   {
+    // Collect ambient noise readings.
      mic0AmbientVals[ambientLoops] = mic0Value;
      mic1AmbientVals[ambientLoops] = mic1Value;
          
@@ -52,6 +54,7 @@ void loop() {
      Serial.println(mic1AmbientVals[ambientLoops]);
      */
      
+     // Calc std deviations & decide on the ambient values (one for each mic)
      if(ambientLoops == AMBIENT_DETECTION_LOOPS-1)
      {
        Serial.println("Detecting ambient.");
@@ -93,11 +96,11 @@ void loop() {
      ambientLoops++;   
   }
 
-  if(mic0Value > mic0Ambient + AMBIENT_THREASHOLD) digitalWrite(led0Pin, true);
-  if(mic1Value > mic1Ambient + AMBIENT_THREASHOLD) digitalWrite(led1Pin, true);
+  if(mic0Value > mic0Ambient + MIC0_AMBIENT_THREASHOLD) digitalWrite(led0Pin, true);
+  if(mic1Value > mic1Ambient + MIC1_AMBIENT_THREASHOLD) digitalWrite(led1Pin, true);
   
   delay(LOOP_DELAY);
   
-  if(mic0Value > mic0Ambient + AMBIENT_THREASHOLD) digitalWrite(led0Pin, false);
-  if(mic1Value > mic1Ambient + AMBIENT_THREASHOLD) digitalWrite(led1Pin, false);
+  if(mic0Value > mic0Ambient + MIC0_AMBIENT_THREASHOLD) digitalWrite(led0Pin, false);
+  if(mic1Value > mic1Ambient + MIC1_AMBIENT_THREASHOLD) digitalWrite(led1Pin, false);
 }
